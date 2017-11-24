@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		#list {
+			border: 1px solid black;
+			height: 80vh;
+			overflow-y: scroll;
+		}
+		#list li {
+			height: 40px; /* The height of the list element needs to be fixed */
+
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	<!-- The element where the virtual scroll list will be created -->
+	<ul id="list"></ul>
+	
+	<!-- Import the library -->
+	<script src='virtualScroll.js'></script>
+	
+	<!-- Create the virtual scroll -->
+	<script>
+	// Create data
+	var dataLength = 5000;
+
+	var listElm = document.querySelector('#list');
+	var dataList = Array(dataLength);
+	for (var i=0 ; i<dataLength ; i++) {
+		dataList[i] = getHexColor(i);
+	}
+
+	// Create the virtual scroll
+	var elementHeight = 40;
+	var bufferSize = 40;
+	var controller = VirtualScroll.create(listElm, dataList, createElement, elementHeight, bufferSize);
+
+
+
+	// Create the element for the list
+	function createElement(data, position, dataList) {
+		if(data === undefined || data === null) return null;
+
+		var elm = document.createElement('li');
+		elm.appendChild(document.createElement('div'));
+
+		elm.lastChild.style['background-color'] = data;
+		elm.lastChild.style.width = elementHeight+'px';
+		elm.lastChild.style.height = elementHeight+'px';
+
+		elm.appendChild(document.createElement('span'));
+		elm.lastChild.innerHTML = position;
+		return elm;
+	}
+
+	// Generate a color in hexadecimal format from the position
+	function getHexColor(position) {
+		var number = 1250 + position*372;
+		number %= (1<<24);
+		var hex = number.toString(16).slice(0, 6);
+		
+		if(hex.length < 6) {
+			return '#' + '0'.repeat(6-hex.length) + hex;
+		}else {
+			return '#' + hex;
+		}
+	}
+
+	</script>
+</body>
+</html>
